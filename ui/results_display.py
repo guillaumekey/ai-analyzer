@@ -244,11 +244,6 @@ def display_results(results: Dict[str, Any], brand_name: str, brand_url: str,
     """Display all results with unique and total mentions"""
     from utils import prepare_export_data
     from utils.export_utils import export_to_json
-    try:
-        from ui.pdf_export import generate_pdf_report
-        pdf_available = True
-    except ImportError:
-        pdf_available = False
 
     lang = st.session_state.get('language', 'en')
 
@@ -277,7 +272,7 @@ def display_results(results: Dict[str, Any], brand_name: str, brand_url: str,
     if show_individual and active_platforms:
         display_detailed_results(results, brand_name)
 
-    # Export section
+    # Export section - JSON only
     st.subheader(f"💾 {get_text('export_results', lang)}")
 
     export_data = prepare_export_data(
@@ -285,41 +280,14 @@ def display_results(results: Dict[str, Any], brand_name: str, brand_url: str,
         total_unique_mentions, total_all_mentions, total_queries
     )
 
-    col1, col2 = st.columns(2)
+    json_str, filename = export_to_json(export_data, brand_name)
 
-    with col1:
-        json_str, filename = export_to_json(export_data, brand_name)
-        st.download_button(
-            label=f"📥 {get_text('download_report', lang)}",
-            data=json_str,
-            file_name=filename,
-            mime="application/json"
-        )
-
-    with col2:
-        if pdf_available:
-            if st.button(f"📄 {get_text('download_pdf_report', lang)}", type="primary"):
-                with st.spinner(get_text('generating_pdf', lang)):
-                    try:
-                        pdf_data = generate_pdf_report(
-                            brand_name=brand_name,
-                            brand_url=brand_url,
-                            results=results,
-                            competitors=competitors,
-                            prompts=prompts,
-                            lang=lang
-                        )
-
-                        st.download_button(
-                            label=f"⬇️ {get_text('download_pdf_report', lang)}",
-                            data=pdf_data,
-                            file_name=f"{brand_name}_AI_Visibility_Report_{datetime.now().strftime('%Y%m%d')}.pdf",
-                            mime="application/pdf"
-                        )
-                    except Exception as e:
-                        st.error(f"Error generating PDF: {str(e)}")
-        else:
-            st.info("PDF export requires 'reportlab' library. Install with: pip install reportlab")
+    st.download_button(
+        label=f"📥 {get_text('download_report', lang)}",
+        data=json_str,
+        file_name=filename,
+        mime="application/json"
+    )
 
     # Sources analysis AFTER export (only if Perplexity was used)
     if 'perplexity' in results:
