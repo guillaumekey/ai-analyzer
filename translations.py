@@ -385,8 +385,7 @@ TRANSLATIONS = {
         # Export
         "export_results": "Export Results",
         "download_report": "Download Full Report (JSON)",
-        "download_pdf_report": "Download PDF Report",
-        "generating_pdf": "Generating PDF report...",
+        "export_info": "Brand analysis data is included in the main export file above",
     }
 }
 

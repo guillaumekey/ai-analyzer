@@ -275,9 +275,19 @@ def display_results(results: Dict[str, Any], brand_name: str, brand_url: str,
     # Export section - JSON only
     st.subheader(f"💾 {get_text('export_results', lang)}")
 
+    # Get brand analysis from session state if available
+    brand_analysis = st.session_state.get('brand_analysis', None)
+
     export_data = prepare_export_data(
-        brand_name, brand_url, prompts, results,
-        total_unique_mentions, total_all_mentions, total_queries
+        brand_name=brand_name,
+        brand_url=brand_url,
+        prompts=prompts,
+        results=results,
+        unique_mentions=total_unique_mentions,
+        total_mentions=total_all_mentions,
+        total_queries=total_queries,
+        competitors=competitors,
+        brand_analysis=brand_analysis
     )
 
     json_str, filename = export_to_json(export_data, brand_name)

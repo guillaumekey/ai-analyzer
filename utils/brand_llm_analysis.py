@@ -1091,21 +1091,5 @@ def display_brand_llm_analysis(analysis_results: Dict[str, Any], brand_name: str
                     st.write(response)
                     st.divider()
 
-    # Export button
-    if st.button(f"📥 {get_text('export_brand_analysis', lang)}"):
-        export_data = {
-            "brand_name": brand_name,
-            "analysis_date": datetime.now().isoformat(),
-            "overall_sentiment": overall_sentiment,
-            "platform_sentiments": analysis_results["sentiment_analysis"],
-            "key_themes": analysis_results["key_themes"],
-            "brand_aspects": analysis_results["brand_aspects"]
-        }
-
-        json_str = json.dumps(export_data, indent=2)
-        st.download_button(
-            label=get_text('download_brand_analysis', lang),
-            data=json_str,
-            file_name=f"{brand_name}_brand_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-            mime="application/json"
-        )
+    # Info about export
+    st.info(f"💡 {get_text('export_info', lang)}")
