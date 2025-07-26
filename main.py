@@ -21,9 +21,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# Vertex AI credentials path - Now from environment variable
-VERTEX_CREDENTIALS_PATH = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', 'credentials/vertexai-465711-e8ceb761e644.json')
-
 # Initialize session state
 if 'api_keys' not in st.session_state:
     st.session_state.api_keys = {
@@ -45,9 +42,11 @@ if 'language' not in st.session_state:
     st.session_state.language = 'en'
 if 'brand_analysis' not in st.session_state:
     st.session_state.brand_analysis = None
+if 'vertex_credentials_temp_path' not in st.session_state:
+    st.session_state.vertex_credentials_temp_path = None
 
 
-def test_vertex_in_app():
+def test_vertex_in_app(vertex_credentials_path):
     """Test Vertex AI directement dans l'app"""
     st.header("🧪 Test Vertex AI Direct")
 
@@ -62,11 +61,10 @@ def test_vertex_in_app():
         try:
             from utils.vertex_sentiment_analyzer import VertexSentimentAnalyzer
 
-            vertex_path = VERTEX_CREDENTIALS_PATH
-            st.info(f"Loading from: {vertex_path}")
-            st.info(f"File exists: {os.path.exists(vertex_path)}")
+            st.info(f"Loading from: {vertex_credentials_path}")
+            st.info(f"File exists: {os.path.exists(vertex_credentials_path)}")
 
-            analyzer = VertexSentimentAnalyzer(vertex_path)
+            analyzer = VertexSentimentAnalyzer(vertex_credentials_path)
             st.info(f"Analyzer available: {analyzer.available}")
 
             if analyzer.available:
@@ -226,13 +224,13 @@ def main():
     st.title(f"{APP_ICON} {get_text('app_title', lang)}")
     st.markdown(get_text('app_description', lang))
 
-    # Render sidebar and get API keys and models
-    api_keys, selected_models, show_individual_results = render_sidebar()
+    # Render sidebar and get API keys, models, and vertex credentials path
+    api_keys, selected_models, show_individual_results, vertex_credentials_path = render_sidebar()
     st.session_state.api_keys = api_keys
 
     # Test Vertex AI dans la sidebar
     if st.sidebar.checkbox("🧪 Test Vertex AI Direct", value=False):
-        test_vertex_in_app()
+        test_vertex_in_app(vertex_credentials_path)
         return  # Stop here to focus on testing
 
     # Main content area
@@ -335,7 +333,7 @@ def main():
 
             with col2:
                 # Check if Vertex AI credentials exist
-                vertex_available = os.path.exists(VERTEX_CREDENTIALS_PATH)
+                vertex_available = vertex_credentials_path and os.path.exists(vertex_credentials_path)
                 if vertex_available:
                     st.info("✅ Google Cloud Natural Language API configured")
                 else:
@@ -371,7 +369,7 @@ def main():
                                 st.session_state.brand_info['name'],
                                 analysis_clients,
                                 selected_models,
-                                vertex_credentials_path=VERTEX_CREDENTIALS_PATH if vertex_available else None
+                                vertex_credentials_path=vertex_credentials_path if vertex_available else None
                             )
 
                             # Store in session state
