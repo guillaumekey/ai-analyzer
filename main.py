@@ -287,7 +287,7 @@ def main():
             detected_competitors = []
             if api_keys.get('openai'):
                 with st.spinner(get_text('detecting_competitors', lang)):
-                    ai_client = OpenAIClient(api_keys['openai'], selected_models['openai'])
+                    ai_client = OpenAIClient(api_keys['openai'], 'gpt-4o')
                     detection_results = detect_competitors_from_results(ai_client, results, brand_name,
                                                                         manual_competitors)
                     detected_competitors = detection_results.get('detected', [])

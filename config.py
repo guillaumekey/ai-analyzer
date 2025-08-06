@@ -8,7 +8,7 @@ APP_VERSION = "1.0.0"
 APP_ICON = "🔍"
 
 # API Models (defaults)
-OPENAI_MODEL = "gpt-3.5-turbo"
+OPENAI_MODEL = "gpt-4o"
 PERPLEXITY_MODEL = "sonar"  # Updated to new model system
 GEMINI_MODEL = "gemini-1.5-flash"
 
